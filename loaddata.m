@@ -1,8 +1,8 @@
 %% get the data from the .csv files
 
 idData = fopen('test1v_responses.csv');
-
 data = textscan(idData, '%s %s %s');
+fclose(idData);
 
 datamatrix = [data{2} data{3}];
 datamatrix = sortrows(datamatrix);
@@ -58,14 +58,15 @@ posHandedness = strmatch('Handedness', datamatrix(:,1)); %get indices Handedness
 
 %% RMET -- 
 
+% get the answers of the participant
 posRMET = strmatch('RMET', datamatrix (:, 1)); 
 posRMET_Practice = strmatch('RMET.Practise', datamatrix (:, 1));
-posRMET_Defin = strmatch('RMET.Definition', datamatrix (:, 1));
+posRMET_DefinUnd = strmatch('RMET.Definition', datamatrix (:, 1));
+posRMET_Defin = strmatch('RMET.Definition.undefined', datamatrix (:, 1));
 posRMET_Page = strmatch('RMET.Page', datamatrix (:, 1));
 
 % remove the rows that contain 'RMET.Page', 'RMET.Definition', and
 % 'RMET.Practice'
-
 allRMET = datamatrix(posRMET,:);
 
 for i = 1:numel(posRMET_Page)
@@ -80,11 +81,55 @@ for k = 1:numel(posRMET_Practice)
     posRMET(posRMET == posRMET_Practice(i)) = [];
 end
 
+for l = 1:numel(posRMET_DefinUnd)
+    posRMET(posRMET == posRMET_DefinUnd(i)) = [];
+end
 
-ansRMET = datamatrix(posRMET,:);
-defRMET = datamatrix(posRMET_Defin, :);
+ansRMET = datamatrix(posRMET, 2);
+
+
+% get the correct answers
+idStimuliRMET = fopen('RMET_Stimuli.csv');
+stimuliRMET = textscan(idStimuliRMET, '%s %s %s %s %s %s %s %s', ...
+    'Delimiter',';');
+fclose(idStimuliRMET);
+
+dataRMET = [stimuliRMET{3} stimuliRMET{4} stimuliRMET{5} stimuliRMET{6} ...
+    stimuliRMET{8}];
+
+posCorrect = (3:38);
+correctRMET = dataRMET(posCorrect, 5);
+possAns = dataRMET (posCorrect, 1:4);
+
+cmpAns = zeros (1, numel(ansRMET));
+
+for i = 1:length(ansRMET)
+    currentAns = ansRMET(i);
+    currentAns = currentAns{1};
+    currentAns = currentAns(2:(length(currentAns) - 1));
+    
+    %check whether the answer is in the four possible choices
+    okanswers = sum(ismember(currentAns, possAns(i, :)));
+    okcorrect = sum(ismember(correctRMET(i), possAns(i, :)));
+    if okanswers == 1
+        if okcorrect == 1
+            cmpAns(i) = strcmp(currentAns, correctRMET(i));
+        else
+            %print error
+        end
+    else
+        % print error
+        
+    end
+ end
+
+resultRMET = sum(cmpAns);
+
+%% test
+
 
 %% MET --
+
 
 %% Circles --
 
@@ -92,4 +137,4 @@ defRMET = datamatrix(posRMET_Defin, :);
 
 
 
-fclose(idData);
+
