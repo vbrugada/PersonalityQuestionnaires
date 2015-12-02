@@ -68,38 +68,38 @@ numvect = [1 10 100:109 11 110:119 12 120:129 13 130:139 14 140:149 ...
 
 [sorted, indsort] = sort(numvect);
 
-posNEOPI = strmatch('NEOPI', datamatrix(:,1)); % get indices of NEOPI
-posNEOPI_Page = strmatch('NEOPI.Page', datamatrix(:, 1)); % get indices NEOPI.Page
+% DO THIS PROPERLY
+ind_ansNEOPI = strmatch('NEOPI', datamatrix(:,1)); 
+ind_NEOPIpage = strmatch('NEOPI.Page', datamatrix(:, 1)); % get indices NEOPI.Page
 
 % remove the rows that contain 'NEOPI.Page'
-for i = 1:numel(posNEOPI_Page)
-   posNEOPI(posNEOPI == posNEOPI_Page(i)) = []; 
+for i_neopage = 1:numel(ind_NEOPIpage)
+   ind_ansNEOPI(ind_ansNEOPI == ind_NEOPIpage(i_neopage)) = []; 
 end
 
-answersNEOPI = datamatrix(posNEOPI,:);
-answersNEOPI = answersNEOPI(indsort,2);
+ansNEOPI = datamatrix(ind_ansNEOPI,:);
+ansNEOPI = ansNEOPI(indsort,2);
 
 vectNEOPI = zeros(1, 240);
 
-for j = 1:numel(vectNEOPI);
-    currentvalue = cell2mat(answersNEOPI(j));
-        if length(currentvalue) > 1
-        currentvalue = str2double(currentvalue(2));   
+for i_neopi = 1:numel(vectNEOPI);
+    currvalue = cell2mat(ansNEOPI(i_neopi));
+        if length(currvalue) > 1
+        currvalue = str2double(currvalue(2));   
         else
-        currentvalue = str2double(currentvalue);    
+        currvalue = str2double(currvalue);    
         end
-    vectNEOPI(j) = currentvalue;
+    vectNEOPI(i_neopi) = currvalue;
 end
 
 [vectFacets, vectDomains] = getNEOPIvalues (vectNEOPI);
 
-[Tvalues_facets, Tvalues_domains] = findTvalues (vectFacets, vectDomains, gender);
-
-
+[resNEOPI_facets, resNEOPI_domains] = findTvalues (vectFacets, vectDomains, gender);
 
 
 %% RMET -- 
 
+% DO THIS PROPERLY
 % get the answers of the participant
 posRMET = strmatch('RMET', datamatrix (:, 1)); 
 posRMET_Practice = strmatch('RMET.Practise', datamatrix (:, 1));
@@ -145,17 +145,16 @@ possAns = dataRMET (posCorrect, 1:4);
 
 cmpAns = zeros (1, numel(ansRMET));
 
-for i = 1:length(ansRMET)
-    currentAns = ansRMET(i);
-    currentAns = currentAns{1};
-    currentAns = currentAns(2:(length(currentAns) - 1));
+for i_met = 1:length(ansRMET)
+    curranswer = ansRMET(i_met);
+    curranswer = curranswer{1};
     
     %check whether the answer is in the four possible choices
-    okanswers = sum(ismember(currentAns, possAns(i, :)));
-    okcorrect = sum(ismember(correctRMET(i), possAns(i, :)));
+    okanswers = sum(ismember(curranswer, possAns(i_met, :)));
+    okcorrect = sum(ismember(correctRMET(i_met), possAns(i_met, :)));
     if okanswers == 1
         if okcorrect == 1
-            cmpAns(i) = strcmp(currentAns, correctRMET(i));
+            cmpAns(i_met) = strcmp(curranswer, correctRMET(i_met));
         else
             %print error
         end
@@ -169,70 +168,33 @@ resultRMET = sum(cmpAns);
 
 %% MET --
 
-% get the answers of the participant
-posMET = strmatch('MET', datamatrix (:, 1)); 
-posMET_Practice = strmatch('MET.practise', datamatrix (:, 1));
-% posRMET_DefinUnd = strmatch('RMET.Definition', datamatrix (:, 1));
-% posRMET_Defin = strmatch('RMET.Definition.undefined', datamatrix (:, 1));
-posMET_Page = strmatch('MET.Page', datamatrix (:, 1));
-
-% % remove the rows that contain 'RMET.Page', 'RMET.Definition', and
-% % 'RMET.Practice'
-% allRMET = datamatrix(posRMET,:);
-% 
-for i = 1:numel(posMET_Page)
-   posMET(posMET == posMET_Page(i)) = [];
-end
-% 
-% for j = 1:numel(posRMET_Defin)
-%     posRMET(posRMET == posRMET_Defin(i)) = [];
-% end
-% 
-
-for k = 1:numel(posMET_Practice)
-    posMET(posMET == posMET_Practice(i)) = [];
-end
-% 
-% for l = 1:numel(posRMET_DefinUnd)
-%     posRMET(posRMET == posRMET_DefinUnd(i)) = [];
-% end
-% 
-ansMET = datamatrix(posMET, 1:2);
-
-
 idStimuliMET = fopen('MET_Stimuli.csv');
-stimuliMET = textscan(idStimuliMET, '%s %s %s %s %s %s %s %s', ...
+stimMET = textscan(idStimuliMET, '%s %s %s %s %s %s %s %s', ...
     'Delimiter', ';');
 fclose(idStimuliMET);
 
-MET = {};
+ansMET = {};
 
-for i = 1:size(stimuliMET{1}, 1)
+for i_met = 1:size(stimMET{1}, 1)
     % Extract stimulus number from image name
-    tokens = regexpi(stimuliMET{2}(i), '([0-9]*)', 'tokens');
+    tokens = regexpi(stimMET{2}(i_met), '([0-9]*)', 'tokens');
     
     if(isempty(tokens{1})), continue; end;
     
     stimulusNr = str2double(tokens{1}{1});
     
     % Extract data for stimulus
-    field = ['MET.' num2str(stimulusNr) '.A,'];
-    answerA = data{3}(strcmp(data{2}, field));
+    field = ['MET.' num2str(stimulusNr) '.A'];
+    ans_METword = data{3}(strcmp(data{2}, field));
 
-    field = ['MET.' num2str(stimulusNr) '.B,'];
-    answerB = data{3}(strcmp(data{2}, field));
+    field = ['MET.' num2str(stimulusNr) '.B'];
+    ans_METvalue = data{3}(strcmp(data{2}, field));
     
     % Extract correct answer    
-    correctAnswer = stimuliMET{8}(i);
+    ans_METcorrect = stimMET{8}(i_met);
     
-    MET(i, 1:4) = [stimulusNr answerA answerB correctAnswer];
+    ansMET(i_met, 1:4) = [stimulusNr ans_METword ans_METvalue ans_METcorrect];
 end
 
-
-
-
-
-
-%% Circles --
-
+resMET_words = sum(strcmp(ansMET(:, 2), ansMET(:, 4)));
 %% LOCS --
