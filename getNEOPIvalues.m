@@ -1,4 +1,16 @@
-function [vectFacets, vectDomains] = getNEOPIvalues (vectNEOPI)
+function [vectFacets, vectDomains] = getNEOPIvalues (ansNEOPI)
+
+vectNEOPI = zeros(1, 240);
+
+for i_neopi = 1:numel(vectNEOPI);
+    currvalue = cell2mat(ansNEOPI(i_neopi));
+        if length(currvalue) > 1
+        currvalue = str2double(currvalue(2));   
+        else
+        currvalue = str2double(currvalue);    
+        end
+    vectNEOPI(i_neopi) = currvalue;
+end
 
 % n of question 
 N1 = [1 31 61 91 121 151 181 211];
