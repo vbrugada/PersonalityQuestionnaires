@@ -5,6 +5,8 @@ stimRMET = textscan(idStimuliRMET, '%q %q %q %q %q %q %q %q', ...
     'Delimiter',';');
 fclose(idStimuliRMET);
 
+    ans_RMETpossible = [stimRMET{3} stimRMET{4} stimRMET{5} stimRMET{6}];
+    ans_RMETpossible = ans_RMETpossible(3:38, :);
 
 ans_RMET = {};
 
@@ -24,8 +26,6 @@ for i_rmet = 1:size(stimRMET{1}, 1)
     ans_RMETcorrect = stimRMET{8}(i_rmet);
 
     % Extract possible answers
-    ans_RMETpossible = [stimRMET{3} stimRMET{4} stimRMET{5} stimRMET{6}];
-    ans_RMETpossible = ans_RMETpossible(3:38, :);
     isanswer = ...
            ismember(ans_RMETword, ans_RMETpossible((i_rmet - 2), :));
     iscorrect = ...

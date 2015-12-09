@@ -1,4 +1,4 @@
-function [vectTval_facets, vectTval_domains] = get_NEOPI_Tvalues (vF, vD, gender)
+function [vectTval_facets, vectTval_domains] = getNEOPI_Tvalues (vF, vD, gender)
 
 % get the norm_map
 if gender == 'M'

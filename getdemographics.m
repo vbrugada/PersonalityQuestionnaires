@@ -1,6 +1,7 @@
-function [gender, age] = getdemographics (datamatrix)
+function [id, gender, age] = getdemographics (datamatrix)
 
-% participantID = cell2mat(datamatrix(strmatch('Demographucs
+id = cell2mat(datamatrix(strmatch('ParticipantID', ...
+    datamatrix(:, 1)),2));
 
 gender = cell2mat(datamatrix(strmatch('Demographics.Gender', ...
     datamatrix(:, 1)),2));
