@@ -5,7 +5,7 @@ dataDir = 'C:\Users\User\Documents\GitHub\PersonalityQuestionnaires\Data';
 files = dir(fullfile(dataDir, '*_responses.csv'));
 
 tmp = struct('participant', [], 'Handedness', [], 'NEOPI_Facets', [], ...
-    'NEOPI_Domains', [], 'NEOPI_FacetsNorm', [], 'NEOPI_DomainsNorm', ...
+    'NEOPI.Domains', [], 'NEOPI.Facets_norm', [], 'NEOPI.Domains_norm', ...
     [], 'RMET', [], 'MET', [], 'LOCS', []);
 
 for i_files = 1:numel(files)
@@ -36,10 +36,10 @@ subject.Handedness = res_LI;
 [res_TvalFacets, res_TvalDomains, norm_valFacets, norm_valDomains] ...
     = getNEOPIvalues (datamatrix, gender);
 
-subject.NEOPI_Facets = res_TvalFacets;
-subject.NEOPI_Domains = res_TvalDomains;
-subject.NEOPI_FacetsNorm = norm_valFacets;
-subject.NEOPI_DomainsNorm = norm_valDomains;
+subject.NEOPI.Facets = res_TvalFacets;
+subject.NEOPI.Domains = res_TvalDomains;
+subject.NEOPI.Facets_norm = norm_valFacets;
+subject.NEOPI.Domains_norm = norm_valDomains;
  
 % RMET -- 
 [res_RMET] = getRMETvalues (data);
